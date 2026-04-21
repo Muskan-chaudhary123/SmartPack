@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template_string
-from database.models import SessionLocal, Box, Item
+from backend.database.models import SessionLocal, Box, Item
 
 summary_bp = Blueprint("summary", __name__)
 

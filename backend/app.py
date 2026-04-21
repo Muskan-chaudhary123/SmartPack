@@ -5,6 +5,7 @@ from backend.database.models import SessionLocal, Box, Item
 import os
 import qrcode
 import time
+from flask import session
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 app.secret_key = "your-secret-key"
@@ -15,6 +16,7 @@ vendor_bp = Blueprint("vendor", __name__)
 @app.route("/")
 def landing_page():
     return render_template("landing.html")
+
 
 @vendor_bp.route("/api/suggest_box", methods=["POST"])
 def api_suggest_box():
@@ -77,7 +79,7 @@ def get_dimensions():
         return jsonify({"status": "error", "message": str(e)}), 400
 
 
-from flask import session
+
 @app.route('/dashboard/vendor', methods=['GET', 'POST'])
 def vendor_dashboard():
     suggested_box = session.get("suggested_box", {})

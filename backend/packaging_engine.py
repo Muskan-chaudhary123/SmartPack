@@ -1,4 +1,4 @@
-from database.models import SessionLocal, Box, Item
+from backend.database.models import SessionLocal, Box, Item
 
 def suggest_box(items):
     total_volume = 0
