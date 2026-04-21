@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Blueprint
 from flask_cors import CORS
-from packaging_engine import suggest_box
-from database.models import SessionLocal, Box, Item
+from backend.packaging_engine import suggest_box
+from backend.database.models import SessionLocal, Box, Item
 import os
 import qrcode
 import time
