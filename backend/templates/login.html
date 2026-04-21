@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SmartPack Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #e8ecf8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .login-section {
+      width: 50%;
+      padding: 4rem 4rem 2rem 4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .image-section {
+      width: 50%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    .image-section img {
+      width: 100%;
+      height: 100vh;
+      object-fit: cover;
+    }
+
+    input, select {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  height: 60px;
+  padding: 3rem 3rem;        /* Increased height */
+  font-size: 3rem;              /* Larger text */
+  width: 100%;
+  outline-color: #0071ce;
+}
+
+label {
+  font-weight: 500;
+  font-size: 2rem;
+}
+
+
+    .btn-login {
+      background-color: #0071ce;
+      color: white;
+      border-radius: 1.25rem;
+      font-weight: bold;
+      padding: 0.8rem;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-login:hover {
+      background-color: #074f86;
+    }
+
+    @media (max-width: 900px) {
+      .login-section, .image-section {
+        width: 100%;
+      }
+
+      .container {
+        flex-direction: column;
+      }
+
+      .image-section img {
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top-Left Logo and Heading -->
+  <header class="absolute top-0 left-0 p-4 flex flex-col items-start">
+    <div class="flex items-center space-x-2">
+      <img src="{{ url_for('static', filename='assets/icons8-trolley-50.png') }}" alt="Logo" class="w-10 h-10">
+      <span class="text-2xl font-bold text-[#0071ce]">SmartPack</span>
+    </div>
+    <p class="text-sm text-gray-600 mt-1 ml-1">Smarter Packaging, Greener Shipping</p>
+  </header>
+
+  <main class="flex h-screen w-screen pt-24">
+    <!-- Left: Login Form -->
+    <section class="login-section">
+      <form id="loginForm" method="POST" action="/login" class="space-y-4">
+        <div>
+          <label for="name" class="block mb-1">Name</label>
+          <input type="text" id="name" name="name" placeholder="Full Name" required>
+        </div>
+        <div>
+          <label for="email" class="block mb-1">Email</label>
+          <input type="email" id="email" name="email" placeholder="example@mail.com" required>
+        </div>
+        <div>
+          <label for="password" class="block mb-1">Password</label>
+          <input type="password" id="password" name="password" placeholder="Your password" required>
+        </div>
+        <div>
+          <label for="role" class="block mb-1">Role</label>
+          <select id="role" name="role" required>
+            <option value="">Select Role</option>
+            <option value="vendor">Vendor</option>
+            <option value="delivery_agent">Delivery Agent</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-login w-full">Login</button>
+      </form>
+    </section>
+
+    <!-- Right: Truck GIF -->
+    <section class="image-section">
+      <img src="{{ url_for('static', filename='assets/Moving-blue.gif') }}" alt="Truck Animation" />
+    </section>
+  </main>
+</body>
+</html>

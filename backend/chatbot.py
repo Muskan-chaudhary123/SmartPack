@@ -1,15 +1,38 @@
-def get_chatbot_reply(message):
-    msg = message.lower()
+from flask import Flask, render_template, request, jsonify
 
-    if "hello" in msg or "hi" in msg:
-        return "Hello! 👋 How can I assist you with SmartPack AI?"
-    elif "box" in msg or "suggestion" in msg:
-        return "You can enter your item dimensions in the dashboard to get a smart box suggestion."
-    elif "qr" in msg or "code" in msg:
-        return "Once a box is suggested, click 'Generate QR' to get a downloadable code."
-    elif "co2" in msg or "carbon" in msg:
-        return "We help reduce CO₂ by optimizing packaging space!"
-    else:
-        return "I'm here to help! Try asking about box suggestion, QR code, or packaging."
+app = Flask(__name__, template_folder="templates")
 
-# 🔁 Later you can replace this with OpenAI/Gemini/HuggingFace integration if needed
+@app.route("/")
+def home():
+    return render_template("chatbot.html")  # Make sure this file exists
+
+@app.route("/get_response", methods=["POST"])
+def get_response():
+    data = request.get_json()
+    user_input = data.get("message")
+
+    if user_input == "__start__":
+        return jsonify({
+            "reply": "Hi there! 👋 I'm your SmartPack AI assistant. What would you like to explore?",
+            "options": ["📦 Optimize Packaging", "📍 Track My Shipment", "🌱 Sustainability Tips"]
+        })
+
+    elif user_input == "📦 Optimize Packaging":
+        return jsonify({
+            "reply": "What's your goal?",
+            "options": ["💰 Reduce Costs", "📏 Minimize Size", "♻️ Eco-Friendly Materials"]
+        })
+
+    elif user_input == "🔙 Back to Menu":
+        return jsonify({
+            "reply": "Back to main menu!",
+            "options": ["📦 Optimize Packaging", "📍 Track My Shipment"]
+        })
+
+    return jsonify({
+        "reply": "I'm still learning!",
+        "options": ["🔙 Back to Menu"]
+    })
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5050)

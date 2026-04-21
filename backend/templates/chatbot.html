@@ -1,17 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>SmartPack Chatbot</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    body { font-family: Arial; background: #f4f6f8; padding: 40px; }
+    #chat-box { background: white; border-radius: 10px; padding: 20px; max-width: 500px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .chat-bubble { margin-bottom: 10px; padding: 10px; border-radius: 8px; }
+    .bot { background: #0071ce; color: white; text-align: left; }
+    .user { background: #e0e0e0; text-align: right; }
+    button { margin: 5px 2px; padding: 8px 12px; border: none; background: #0071ce; color: white; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #005fa3; }
+  </style>
 </head>
-<body class="chat-body">
-  <div class="chatbox">
-    <h2>🤖 SmartPack Bot</h2>
-    <div id="chatDisplay" class="chat-display"></div>
-    <input type="text" id="userInput" placeholder="Ask me anything..." />
-    <button onclick="sendMessage()">Send</button>
+<body>
+  <div id="chat-box">
+    <h2>💬 SmartPack AI Chatbot</h2>
+    <div id="chat-log"></div>
+    <div id="options"></div>
   </div>
-  <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+
+  <script>
+    async function sendMessage(message) {
+      const chatLog = document.getElementById("chat-log");
+      const optionsDiv = document.getElementById("options");
+
+      const userBubble = document.createElement("div");
+      userBubble.className = "chat-bubble user";
+      userBubble.innerText = message;
+      chatLog.appendChild(userBubble);
+
+      optionsDiv.innerHTML = "";
+
+      const response = await fetch("/get_response", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+
+      const botBubble = document.createElement("div");
+      botBubble.className = "chat-bubble bot";
+      botBubble.innerText = data.reply;
+      chatLog.appendChild(botBubble);
+
+      (data.options || []).forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.onclick = () => sendMessage(option);
+        optionsDiv.appendChild(btn);
+      });
+
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    window.onload = () => {
+      sendMessage("__start__");
+    };
+  </script>
 </body>
 </html>

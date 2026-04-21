@@ -1,53 +1,121 @@
-const chatDisplay = document.getElementById("chatDisplay");
-const userInput = document.getElementById("userInput");
+function startConversation() {
+  const chatlog = document.getElementById("chatlog");
+  const optionDiv = document.getElementById("options");
+  
+  chatlog.innerHTML = "";
+  optionDiv.innerHTML = "";
+  
+  const loadingMsg = document.createElement("p");
+  loadingMsg.innerText = "🤖 Starting conversation...";
+  loadingMsg.style.background = "#e3f2fd";
+  loadingMsg.style.color = "#1976d2";
+  loadingMsg.style.margin = "8px 0";
+  loadingMsg.style.padding = "8px 12px";
+  loadingMsg.style.borderRadius = "15px";
+  loadingMsg.style.maxWidth = "80%";
+  chatlog.appendChild(loadingMsg);
 
-function sendMessage() {
-  const message = userInput.value.trim();
-  if (!message) return;
-
-  // Display user message
-  chatDisplay.innerHTML += `<div class='user-msg'>👤 ${message}</div>`;
-
-  // Call backend
-  fetch("http://127.0.0.1:5000/chatbot_reply", {
+  fetch("/get_response", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message: "__start__" })
   })
-    .then((res) => res.json())
-    .then((data) => {
-      chatDisplay.innerHTML += `<div class='bot-msg'>🤖 ${data.reply}</div>`;
-      chatDisplay.scrollTop = chatDisplay.scrollHeight;
-    })
-    .catch((err) => {
-      chatDisplay.innerHTML += `<div class='bot-msg error'>⚠️ Error getting response</div>`;
-      console.error(err);
-    });
-
-  userInput.value = "";
+  .then(res => res.json())
+  .then(data => {
+    // Remove loading message
+    chatlog.removeChild(loadingMsg);
+    showBotMessage(data.reply, data.options);
+  })
+  .catch(error => {
+    console.error("Error:", error);
+    chatlog.removeChild(loadingMsg);
+    showBotMessage("Sorry, I'm having trouble connecting. Please try again.", ["Start Chat"]);
+  });
 }
-document.addEventListener("DOMContentLoaded", function () {
-  const chatDisplay = document.getElementById("chatDisplay");
-  const userInput = document.getElementById("userInput");
-  const sendBtn = document.getElementById("sendBtn");
 
-  sendBtn.addEventListener("click", () => {
-    const message = userInput.value.trim();
-    if (message === "") return;
+function showBotMessage(reply, options = []) {
+  const chatlog = document.getElementById("chatlog");
+  const optionDiv = document.getElementById("options");
 
-    appendMessage("You", message);
-    userInput.value = "";
+  const botMsg = document.createElement("p");
+  botMsg.innerText = "🤖 " + reply;
+  botMsg.style.background = "#e3f2fd";
+  botMsg.style.color = "#1976d2";
+  botMsg.style.margin = "8px 0";
+  botMsg.style.padding = "8px 12px";
+  botMsg.style.borderRadius = "15px";
+  botMsg.style.maxWidth = "80%";
+  botMsg.style.wordWrap = "break-word";
+  chatlog.appendChild(botMsg);
 
-    // ✅ Simulated reply (replace with fetch to backend later)
-    setTimeout(() => {
-      appendMessage("Bot", "Thanks for your message. I’ll get back to you!");
-    }, 500);
+  optionDiv.innerHTML = "";
+
+  options.forEach(option => {
+    const btn = document.createElement("button");
+    btn.innerText = option;
+    btn.className = "option-btn";
+    btn.style.margin = "5px";
+    btn.style.background = "#4caf50";
+    btn.style.color = "white";
+    btn.style.border = "none";
+    btn.style.padding = "8px 16px";
+    btn.style.borderRadius = "20px";
+    btn.style.cursor = "pointer";
+    btn.style.fontSize = "14px";
+    btn.style.transition = "background 0.3s";
+    btn.onmouseover = () => btn.style.background = "#45a049";
+    btn.onmouseout = () => btn.style.background = "#4caf50";
+    btn.onclick = () => sendUserInput(option);
+    optionDiv.appendChild(btn);
   });
 
-  function appendMessage(sender, message) {
-    const msg = document.createElement("p");
-    msg.innerHTML = `<strong>${sender}:</strong> ${message}`;
-    chatDisplay.appendChild(msg);
-    chatDisplay.scrollTop = chatDisplay.scrollHeight;
-  }
+  chatlog.scrollTop = chatlog.scrollHeight;
+}
+
+function sendUserInput(userInput) {
+  const chatlog = document.getElementById("chatlog");
+
+  const userMsg = document.createElement("p");
+  userMsg.innerText = "🧑 " + userInput;
+  userMsg.style.fontWeight = "bold";
+  userMsg.style.background = "#f3e5f5";
+  userMsg.style.color = "#7b1fa2";
+  userMsg.style.margin = "8px 0 8px auto";
+  userMsg.style.padding = "8px 12px";
+  userMsg.style.borderRadius = "15px";
+  userMsg.style.maxWidth = "80%";
+  userMsg.style.textAlign = "right";
+  userMsg.style.wordWrap = "break-word";
+  chatlog.appendChild(userMsg);
+
+  const typingMsg = document.createElement("p");
+  typingMsg.innerText = "🤖 Typing...";
+  typingMsg.style.background = "#e3f2fd";
+  typingMsg.style.color = "#1976d2";
+  typingMsg.style.margin = "8px 0";
+  typingMsg.style.padding = "8px 12px";
+  typingMsg.style.borderRadius = "15px";
+  typingMsg.style.maxWidth = "80%";
+  typingMsg.style.fontStyle = "italic";
+  chatlog.appendChild(typingMsg);
+
+  fetch("/get_response", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: userInput })
+  })
+  .then(res => res.json())
+  .then(data => {
+    chatlog.removeChild(typingMsg);
+    showBotMessage(data.reply, data.options);
+  })
+  .catch(error => {
+    console.error("Error:", error);
+    chatlog.removeChild(typingMsg);
+    showBotMessage("Sorry, I'm having trouble connecting. Please try again.", ["Back to Menu"]);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  console.log("Chatbot ready! Click 'Start Chat' to begin.");
 });

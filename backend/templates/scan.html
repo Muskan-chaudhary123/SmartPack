@@ -1,0 +1,33 @@
+<!-- templates/scan.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scan Parcel</title>
+</head>
+<body>
+    <h2>Scan Success: Parcel ID = {{ parcel_id }}</h2>
+    <p>Click below to send your location.</p>
+    <button onclick="sendLocation()">Send Location</button>
+
+    <script>
+        function sendLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    fetch('/update_location', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            id: "{{ parcel_id }}",
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        })
+                    }).then(res => res.json())
+                      .then(data => alert("Location Updated!"));
+                });
+            } else {
+                alert("Geolocation not supported.");
+            }
+        }
+    </script>
+</body>
+</html>
