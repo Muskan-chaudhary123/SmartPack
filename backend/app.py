@@ -37,8 +37,6 @@ def login():
         password = request.form.get('password')
         role = request.form.get('role')
 
-        print("🎯 Role received from form:", role)  # 🔍 Debug print
-
         if not name or not email or not password or not role:
             flash("Please fill in all fields.")
             return redirect(url_for('login'))
@@ -158,10 +156,7 @@ def delivery_dashboard():
         latitude = request.form.get('latitude')
         longitude = request.form.get('longitude')
 
-        # ✅ Fetch by box_id not id
-        print("🛰️ Received parcel_id:", parcel_id)
         box = db.query(Box).filter_by(id=parcel_id).first()
-        print("📦 Found box in DB:", box)
 
         items = box.items if box else []
         qr_path = f"assets/qrcodes/{parcel_id}.png"
